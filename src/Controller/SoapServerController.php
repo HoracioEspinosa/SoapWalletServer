@@ -1,73 +1,42 @@
 <?php
-
+    
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Response;
+use Laminas\Soap\Server;
 use App\Service\SoapService;
+use Laminas\Server\Reflection;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class SoapServerController extends AbstractController
 {
-    public function guardarOrdenDeCompra($request) {
-        return [
-            'NumeroDeAutorizacion' => 'La orden de compra ' . $request['NumeroDeOrden'] . ' ha sido autorizada con el número ' . rand(1000, 100000),
-            'Resultado' => true
-        ];
-    }
-    
-    /**
-     * @Route("/soap/server", name="soap_server")
-     */
-    public function soapServer(SoapService $soapService)
-    {
-        // NuSOAP implementation
-        $namespace = 'Controller.asv';
-        $server = new \soap_server();
-        $server->configureWSDL("MiSOAP", $namespace);
-        $server->wsdl->schemaTargetNamespace = $namespace;
+    #[Route('/soap')]
+    public function index(SoapService $soapService): Response {
+        $serverUrl = "http://127.0.0.1:8000/soap";
+        $options = ['uri' => $serverUrl];
+        $server = new \Laminas\Soap\Server(null, $options);
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'text/xml; charset=ISO-8859-1');
         
-        
-        $server->wsdl->addComplexType(
-            "OrdenDeCompra",
-            "complexType",
-            "struct",
-            "all",
-            '',
-            [
-                'NumeroDeOrden' => ['name' => 'NumeroDeOrden', 'type' => 'xsd:string'],
-                'Ordenante' => ['name' => 'Ordenante', 'type' => 'xsd:string'],
-                'Moneda' => ['name' => 'Moneda', 'type' => 'xsd:string'],
-                'TipoCambio' => ['name' => 'TipoCambio', 'type' => 'xsd:decimal'],
-            ]
-        );
-        
-        $server->wsdl->addComplexType(
-            'response',
-            'complexType',
-            'struct',
-            'all',
-            '',
-            [
-                'NumeroDeAutorizacion' => ['name' => 'NumeroDeAutorizacion', 'type' => 'xsd:string'],
-                'Resultado' => ['name' => 'Resultado', 'type' => 'xsd:boolean'],
-            ]
-        );
-        
-        $server->register(
-            'SoapServerController.guardarOrdenDeCompra',
-            ['name' => 'tns:ordenDeCompra'],
-            ['name' => 'tns:response'],
-            $namespace,
-            false,
-            'rpc',
-            'encoded',
-            'Recibe una orden de compra y regresa un numero de autorizacion'
-        );
-        
-       // $server->debug_flag = true;
-        $POST_DATA = file_get_contents('php://input');
-        $server->service($POST_DATA);
-        exit();
+        if (isset($_GET['wsdl'])) {
+            $soapAutoDiscover = new \Laminas\Soap\AutoDiscover(
+                new \Laminas\Soap\Wsdl\ComplexTypeStrategy\ArrayOfTypeSequence(),
+                $serverUrl
+            );
+            $soapAutoDiscover->setBindingStyle(array('style' => 'rpc'));
+            $soapAutoDiscover->setOperationBodyStyle(array('use' => 'encode'));
+            $soapAutoDiscover->setClass($soapService);
+            $response->setContent($soapAutoDiscover->generate()->toXml());
+        } else {
+            $server->setClass($soapService);
+            ob_start();
+            $server->setDebugMode(true);
+            $server->handle();
+            $response->setContent(ob_get_clean());
+        }
+
+        return $response;
     }
 }

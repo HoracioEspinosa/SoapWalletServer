@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "75047cd89355292ac21307a3104f776a",
+    "content-hash": "f6873946db939b74385ee0ff7dff2d0e",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1125,16 +1125,16 @@
         },
         {
             "name": "doctrine/orm",
-            "version": "2.13.2",
+            "version": "2.13.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/orm.git",
-                "reference": "a8b02fd70fa777ca8278b9604fdef75c15c6a12f"
+                "reference": "e750360bd52b080c4cbaaee1b48b80f7dc873b36"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/orm/zipball/a8b02fd70fa777ca8278b9604fdef75c15c6a12f",
-                "reference": "a8b02fd70fa777ca8278b9604fdef75c15c6a12f",
+                "url": "https://api.github.com/repos/doctrine/orm/zipball/e750360bd52b080c4cbaaee1b48b80f7dc873b36",
+                "reference": "e750360bd52b080c4cbaaee1b48b80f7dc873b36",
                 "shasum": ""
             },
             "require": {
@@ -1219,9 +1219,9 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/orm/issues",
-                "source": "https://github.com/doctrine/orm/tree/2.13.2"
+                "source": "https://github.com/doctrine/orm/tree/2.13.3"
             },
-            "time": "2022-09-22T13:36:43+00:00"
+            "time": "2022-10-07T06:37:17+00:00"
         },
         {
             "name": "doctrine/persistence",
@@ -1374,71 +1374,6 @@
                 "source": "https://github.com/doctrine/sql-formatter/tree/1.1.3"
             },
             "time": "2022-05-23T21:33:49+00:00"
-        },
-        {
-            "name": "econea/nusoap",
-            "version": "v0.9.12",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/f00b4r/nusoap.git",
-                "reference": "e83219ee1add324124fea8e448b4cfddf782f8ff"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/f00b4r/nusoap/zipball/e83219ee1add324124fea8e448b4cfddf782f8ff",
-                "reference": "e83219ee1add324124fea8e448b4cfddf782f8ff",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4"
-            },
-            "require-dev": {
-                "php-parallel-lint/php-parallel-lint": "~1.2.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "0.10.x-dev",
-                    "dev-develop": "1.0.x-dev"
-                }
-            },
-            "autoload": {
-                "classmap": [
-                    "src/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-2.0-only"
-            ],
-            "authors": [
-                {
-                    "name": "Milan Felix Šulc",
-                    "homepage": "https://f3l1x.io"
-                }
-            ],
-            "description": "Fixed NuSOAP for PHP 5.4 - 8.1",
-            "homepage": "https://github.com/pwnlabs/nusoap",
-            "keywords": [
-                "client",
-                "http",
-                "nusoap",
-                "php",
-                "soap",
-                "transport",
-                "xml"
-            ],
-            "support": {
-                "issues": "https://github.com/f00b4r/nusoap/issues",
-                "source": "https://github.com/f00b4r/nusoap/tree/v0.9.12"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/f3l1x",
-                    "type": "github"
-                }
-            ],
-            "time": "2022-02-22T08:55:13+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -5408,85 +5343,6 @@
                 }
             ],
             "time": "2022-08-02T16:17:38+00:00"
-        },
-        {
-            "name": "twig/extra-bundle",
-            "version": "v3.4.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/twigphp/twig-extra-bundle.git",
-                "reference": "2e58256b0e9fe52f30149347c0547e4633304765"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/twig-extra-bundle/zipball/2e58256b0e9fe52f30149347c0547e4633304765",
-                "reference": "2e58256b0e9fe52f30149347c0547e4633304765",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.2.5",
-                "symfony/framework-bundle": "^4.4|^5.0|^6.0",
-                "symfony/twig-bundle": "^4.4|^5.0|^6.0",
-                "twig/twig": "^2.7|^3.0"
-            },
-            "require-dev": {
-                "league/commonmark": "^1.0|^2.0",
-                "symfony/phpunit-bridge": "^4.4.9|^5.0.9|^6.0",
-                "twig/cache-extra": "^3.0",
-                "twig/cssinliner-extra": "^2.12|^3.0",
-                "twig/html-extra": "^2.12|^3.0",
-                "twig/inky-extra": "^2.12|^3.0",
-                "twig/intl-extra": "^2.12|^3.0",
-                "twig/markdown-extra": "^2.12|^3.0",
-                "twig/string-extra": "^2.12|^3.0"
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.2-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Twig\\Extra\\TwigExtraBundle\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org",
-                    "role": "Lead Developer"
-                }
-            ],
-            "description": "A Symfony bundle for extra Twig extensions",
-            "homepage": "https://twig.symfony.com",
-            "keywords": [
-                "bundle",
-                "extra",
-                "twig"
-            ],
-            "support": {
-                "source": "https://github.com/twigphp/twig-extra-bundle/tree/v3.4.0"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/twig/twig",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2022-01-04T13:58:53+00:00"
         },
         {
             "name": "twig/twig",

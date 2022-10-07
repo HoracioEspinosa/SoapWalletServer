@@ -1,23 +1,21 @@
 <?php
 namespace App\Service;
 
+use Exception;
 use App\Entity\Token;
 use App\Entity\Customer;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 
 class ValidateTokenService
 {
     /** @var EntityManagerInterface $entityManager */
     private EntityManagerInterface $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager )
-    {
+    public function __construct(EntityManagerInterface $entityManager ) {
         $this->entityManager = $entityManager;
     }
 
-    public function validateToken($token,$customer): array|bool|string
-    {
+    public function validateToken($token,$customer): array {
         $customerRepository = $this->entityManager->getRepository(Customer::class);
         $tokenRepository = $this->entityManager->getRepository(Token::class);
 
@@ -37,7 +35,7 @@ class ValidateTokenService
                 $now = new \DateTime("now", new \DateTimeZone('America/Caracas') );
                 if($token_validate[0]['activate'] == "enable" && $token_validate[0]['expiration_date'] >= $now->format('Y-m-d H:i:s')) {
                     return [
-                        'status' => 'success',
+                        'success' => true,
                     ];
                 } else {
                     $token = $tokenRepository->find($token_validate[0]['id']);
@@ -46,22 +44,21 @@ class ValidateTokenService
                     $this->entityManager->flush();
 
                     return [
-                        'status' => 'err',
+                        'success' => false,
                         'message' => 'Your session has expired',
                     ];
                 }
             } else {
                 return [
-                    'status' => 'err',
+                    'success' => false,
                     'message' => 'Invalid Token',
                 ];
             }
         } catch (Exception $e) {
-            $response = [
-                'status' => 'err',
+            return [
+                'success' => false,
                 'message' => 'Invalid Token',
             ];
-            return json_encode($response);
         }
     }
 }

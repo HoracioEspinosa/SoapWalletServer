@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="782ffe1a-a1b0-4fb1-ada2-0230c4823685" activeEnvironment="Default" name="ePayco" resourceRoot="" soapui-version="5.7.0" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="62cacd8e-9246-4855-9685-3872297e493b" wsaVersion="NONE" name="SoapServiceBinding" type="wsdl" bindingName="{http://127.0.0.1:8000/soap}SoapServiceBinding" soapVersion="1_1" anonymous="optional" definition="http://127.0.0.1:8000/soap?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://127.0.0.1:8000/soap?wsdl"><con:part><con:url>http://127.0.0.1:8000/soap?wsdl</con:url><con:content><![CDATA[<definitions name="SoapService" targetNamespace="http://127.0.0.1:8000/soap" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://127.0.0.1:8000/soap" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/">
+  <types>
+    <xsd:schema targetNamespace="http://127.0.0.1:8000/soap"/>
+  </types>
+  <portType name="SoapServicePort">
+    <operation name="login">
+      <documentation>login</documentation>
+      <input message="tns:loginIn"/>
+      <output message="tns:loginOut"/>
+    </operation>
+    <operation name="registerCustomer">
+      <documentation>registerCustomer</documentation>
+      <input message="tns:registerCustomerIn"/>
+    </operation>
+    <operation name="rechargeWallet">
+      <documentation>rechargeWallet</documentation>
+      <input message="tns:rechargeWalletIn"/>
+    </operation>
+    <operation name="confirmPayment">
+      <documentation>confirmPayment</documentation>
+      <input message="tns:confirmPaymentIn"/>
+    </operation>
+    <operation name="checkBalance">
+      <documentation>checkBalance</documentation>
+      <input message="tns:checkBalanceIn"/>
+    </operation>
+    <operation name="payment">
+      <documentation>payment</documentation>
+      <input message="tns:paymentIn"/>
+    </operation>
+  </portType>
+  <binding name="SoapServiceBinding" type="tns:SoapServicePort">
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="login">
+      <soap:operation soapAction="http://127.0.0.1:8000/soap#login"/>
+      <input>
+        <soap:body use="encode" namespace="http://127.0.0.1:8000/soap"/>
+      </input>
+      <output>
+        <soap:body use="encode" namespace="http://127.0.0.1:8000/soap"/>
+      </output>
+    </operation>
+    <operation name="registerCustomer">
+      <soap:operation soapAction="http://127.0.0.1:8000/soap#registerCustomer"/>
+      <input>
+        <soap:body use="encode" namespace="http://127.0.0.1:8000/soap"/>
+      </input>
+    </operation>
+    <operation name="rechargeWallet">
+      <soap:operation soapAction="http://127.0.0.1:8000/soap#rechargeWallet"/>
+      <input>
+        <soap:body use="encode" namespace="http://127.0.0.1:8000/soap"/>
+      </input>
+    </operation>
+    <operation name="confirmPayment">
+      <soap:operation soapAction="http://127.0.0.1:8000/soap#confirmPayment"/>
+      <input>
+        <soap:body use="encode" namespace="http://127.0.0.1:8000/soap"/>
+      </input>
+    </operation>
+    <operation name="checkBalance">
+      <soap:operation soapAction="http://127.0.0.1:8000/soap#checkBalance"/>
+      <input>
+        <soap:body use="encode" namespace="http://127.0.0.1:8000/soap"/>
+      </input>
+    </operation>
+    <operation name="payment">
+      <soap:operation soapAction="http://127.0.0.1:8000/soap#payment"/>
+      <input>
+        <soap:body use="encode" namespace="http://127.0.0.1:8000/soap"/>
+      </input>
+    </operation>
+  </binding>
+  <service name="SoapServiceService">
+    <port name="SoapServicePort" binding="tns:SoapServiceBinding">
+      <soap:address location="http://127.0.0.1:8000/soap"/>
+    </port>
+  </service>
+  <message name="loginIn">
+    <part name="email" type="xsd:string"/>
+    <part name="password" type="xsd:string"/>
+    <part name="expiration_date" type="xsd:string"/>
+  </message>
+  <message name="loginOut">
+    <part name="return" type="xsd:struct"/>
+  </message>
+  <message name="registerCustomerIn">
+    <part name="email" type="xsd:anyType"/>
+    <part name="password" type="xsd:anyType"/>
+    <part name="dni" type="xsd:anyType"/>
+    <part name="name" type="xsd:anyType"/>
+    <part name="last_name" type="xsd:anyType"/>
+    <part name="phone" type="xsd:anyType"/>
+  </message>
+  <message name="rechargeWalletIn">
+    <part name="dni" type="xsd:anyType"/>
+    <part name="phone" type="xsd:anyType"/>
+    <part name="balance" type="xsd:anyType"/>
+    <part name="token" type="xsd:anyType"/>
+  </message>
+  <message name="confirmPaymentIn">
+    <part name="token_email" type="xsd:anyType"/>
+    <part name="session_id" type="xsd:anyType"/>
+  </message>
+  <message name="checkBalanceIn">
+    <part name="dni" type="xsd:anyType"/>
+    <part name="phone" type="xsd:anyType"/>
+    <part name="token" type="xsd:anyType"/>
+  </message>
+  <message name="paymentIn">
+    <part name="token" type="xsd:anyType"/>
+    <part name="session_id" type="xsd:anyType"/>
+    <part name="amount_payable" type="xsd:anyType"/>
+  </message>
+</definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://127.0.0.1:8000/soap</con:endpoint></con:endpoints><con:operation id="9eac051a-dab0-49d9-8665-3f9c6ce3bd0e" isOneWay="false" action="http://127.0.0.1:8000/soap#checkBalance" name="checkBalance" bindingOperationName="checkBalance" type="One-Way" inputName="" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="223f431f-19a8-45a2-ab64-50b08ff08296" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://127.0.0.1:8000/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://127.0.0.1:8000/soap">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <soap:checkBalance>\r
+         <dni>12345678</dni>\r
+         <phone>9988958202</phone>\r
+         <token>933565</token>\r
+      </soap:checkBalance>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://127.0.0.1:8000/soap#checkBalance"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="892d02b2-c880-4135-a0f0-042fbb91bb81" isOneWay="false" action="http://127.0.0.1:8000/soap#confirmPayment" name="confirmPayment" bindingOperationName="confirmPayment" type="One-Way" inputName="" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="ef5a4706-79b0-4dfa-8cc4-43512fd0dc96" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://127.0.0.1:8000/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://127.0.0.1:8000/soap">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <soap:confirmPayment>\r
+         <token_email>63409aa0f01e1</token_email>\r
+         <session_id>Wg0LQ1p4UF</session_id>\r
+      </soap:confirmPayment>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://127.0.0.1:8000/soap#confirmPayment"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="04f4d80e-a4ba-4751-ac41-6cef6ab7ef55" isOneWay="false" action="http://127.0.0.1:8000/soap#login" name="login" bindingOperationName="login" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="55d611ca-e59d-4deb-ab7e-9a2750b58be2" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://127.0.0.1:8000/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://127.0.0.1:8000/soap">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <soap:login>\r
+         <email>horacioespinosa94@gmail.com</email>\r
+         <password>Horacio123x</password>\r
+         <expiration_date>2022-10-09 10:00:00</expiration_date>\r
+      </soap:login>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://127.0.0.1:8000/soap#login"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="8e2aa78a-836d-488c-85ab-e8ef1692303e" isOneWay="false" action="http://127.0.0.1:8000/soap#payment" name="payment" bindingOperationName="payment" type="One-Way" inputName="" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="e0aef805-f966-4554-a245-04225ba54f68" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://127.0.0.1:8000/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://127.0.0.1:8000/soap">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <soap:payment>\r
+         <token>933565</token>\r
+         <session_id>Wg0LQ1p4UF</session_id>\r
+         <amount_payable>151</amount_payable>\r
+      </soap:payment>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://127.0.0.1:8000/soap#payment"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="cee3280e-2a26-45e1-939f-0f6f8dbc127a" isOneWay="false" action="http://127.0.0.1:8000/soap#rechargeWallet" name="rechargeWallet" bindingOperationName="rechargeWallet" type="One-Way" inputName="" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="284d8d6c-747d-4159-82f1-e319674cc89b" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://127.0.0.1:8000/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://127.0.0.1:8000/soap">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <soap:rechargeWallet>\r
+         <dni>?</dni>\r
+         <phone>?</phone>\r
+         <balance>?</balance>\r
+         <token>?</token>\r
+      </soap:rechargeWallet>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://127.0.0.1:8000/soap#rechargeWallet"/></con:call></con:operation><con:operation id="9c473bf2-ea6b-4cfa-89a5-217573dc4f81" isOneWay="false" action="http://127.0.0.1:8000/soap#registerCustomer" name="registerCustomer" bindingOperationName="registerCustomer" type="One-Way" inputName="" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="74a6f6e7-49a8-48c3-97cc-86a940f02cde" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://127.0.0.1:8000/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://127.0.0.1:8000/soap">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <soap:registerCustomer>\r
+         <email>horacioespinosa94@gmail.com</email>\r
+         <password>Horacio123x</password>\r
+         <dni>123456789</dni>\r
+         <name>Horacio Darinel</name>\r
+         <last_name>Espinosa Barcelo</last_name>\r
+         <phone>9988958202</phone>\r
+      </soap:registerCustomer>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://127.0.0.1:8000/soap#registerCustomer"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/></con:soapui-project>

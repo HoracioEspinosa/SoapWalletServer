@@ -1,98 +1,73 @@
 <?php
 namespace App\Service;
 
+use App\Entity\Token;
+use App\Entity\Customer;
 use App\Service\ValidateTokenService;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Customer;
-use App\Entity\Token;
 
 class SoapService
 {
 
-    private $em;
-    private $validateToken;
+    /** @var EntityManagerInterface $entityManager */
+    private EntityManagerInterface $entityManager;
+    /** @var \App\Service\ValidateTokenService $validateToken */
+    private \App\Service\ValidateTokenService $validateToken;
 
     public function __construct(EntityManagerInterface $entityManager, ValidateTokenService $ValidateTokenService)
     {
-        $this->em = $entityManager;
+        $this->entityManager = $entityManager;
         $this->validateToken = $ValidateTokenService;
     }
 
-    public function login($email=false,$id=false,$token=false,$expiration_date=false){
+    /**
+     * @param string|null $email
+     * @param string|null $password
+     * @param string|null $expiration_date
+     * @return object
+     */
+    public function login(string $email=null, string $password=null, string $expiration_date=null): object {
+        $customerRepository = $this->entityManager->getRepository(Customer::class);
+        $customer = $customerRepository->findOneBy(['email' => $email, 'password' => $password]);
 
-        $customerRepository = $this->em->getRepository(Customer::class);
-
-        if($email){
-
-            $customer = $customerRepository->findOneBy(
-                array(
-                    'email' => $email
-                )
-            );
-    
-            if($customer){
-                try {
-                    $data = [
-                        'id' => $customer->getId(),
-                        'password' => $customer->getPassword()
-                    ];
-        
-                    $response = [
-                        'status' => 'success',
-                        'response' => $data
-                    ];
-                    return json_encode($response);
-    
-                } catch (Exception $e) {
-                    $response = [
-                        'status' => 'err',
-                        'message' => 'Option Not Available At The Moment'
-                    ];
-                    return json_encode($response);
-                }
-    
-            } else{
-                $response = [
-                    'status' => 'err',
-                    'message' => 'Customer Not Registered'
-                ];
-                return json_encode($response);
-            }
-
-        } else {
-
+        if($customer){
             try {
-
-                $customerEntity = $customerRepository->find($id);
+                $sessionId = $this->generateRandomString();
+                $token = random_int(100000, 999999);
                 $tokenEntity = new Token();
-
                 $tokenEntity->setToken($token);
-                $tokenEntity->setExpirationDate($expiration_date); 
+                $tokenEntity->setExpirationDate($expiration_date ?? date('Y-m-d H:i:s'));
                 $tokenEntity->setActivate('enable');
-                $tokenEntity->setCustomer($customerEntity);
-                $this->em->persist($tokenEntity);
-                $this->em->flush();
+                $tokenEntity->setCustomer($customer);
+                $this->entityManager->persist($tokenEntity);
+                $this->entityManager->flush();
+                
+                $customer->setSessionId($sessionId);
+                $this->entityManager->persist($customer);
+                $this->entityManager->flush();
 
-                $response = [
-                    'status' => 'success',
+                return (object) [
+                    'success' => true,
                     'message' => 'Logged in!',
-                    'token' => $token
+                    'token' => $token,
+                    'session_id' => $sessionId
                 ];
-                return json_encode($response);
-
-            } catch (Exception $e) {
-                $response = [
-                    'status' => 'err',
-                    'message' => 'Option Not Available At The Moment'
+            } catch (\Exception $e) {
+                return (object) [
+                    'success' => false,
+                    'message' => 'Option not available at the moment' . $e->getMessage()
                 ];
-                return json_encode($response);
             }
+        } else{
+            return (object) [
+                'success' => false,
+                'message' => 'Customer Not Registered'
+            ];
         }
     }
 
-    public function registerCustomer($email,$password,$dni,$name,$last_name,$phone) {
-
-        $customerRepository = $this->em->getRepository(Customer::class);
+    public function registerCustomer($email,$password,$dni,$name,$last_name,$phone): object {
+        $customerRepository = $this->entityManager->getRepository(Customer::class);
         $query = $customerRepository->createQueryBuilder("customer")
             ->where("customer.email = :email")
             ->orWhere("customer.dni = :dni")
@@ -102,14 +77,13 @@ class SoapService
         $existingCustomer = $query->getResult();
 
         if($existingCustomer){
-            $response = [
-                'status' => 'err',
-                'message' => 'Customer Is Already Registered'
+            return  (object) [
+                'success' => false,
+                'message' => 'Customer already exists'
             ];
-            return json_encode($response);
-
         } else{
             $customer = new Customer();
+
             try {
                 $customer->setEmail($email);
                 $customer->setPassword($password);
@@ -118,340 +92,156 @@ class SoapService
                 $customer->setLastName($last_name);
                 $customer->setPhone($phone);
 
-                $this->em->persist($customer);
-                $this->em->flush();
+                $this->entityManager->persist($customer);
+                $this->entityManager->flush();
 
-                $response = [
-                    'status' => 'success',
+                return (object) [
+                    'success' => true,
                     'message' => 'Customer Successfully Registered'
                 ];
-                return json_encode($response);
 
-            } catch (Exception $e) {
-                $response = [
-                    'status' => 'err',
-                    'message' => 'Option Not Available At The Moment'
+            } catch (\Exception $e) {
+                return (object) [
+                    'success' => false,
+                    'message' => 'Option not available at the moment'
                 ];
-                return json_encode($response);
             }
-        }        
+        }  
     }
 
-    public function rechargeWallet($dni,$phone,$balance,$token) {
-
-        $customerRepository = $this->em->getRepository(Customer::class);
-        $customer = $customerRepository->findOneBy(
-            array(
-                'dni' => $dni,
-                'phone' => $phone
-            )
-        );
+    public function rechargeWallet($dni,$phone,$balance,$token): object {
+        $customerRepository = $this->entityManager->getRepository(Customer::class);
+        $customer = $customerRepository->findOneBy(['dni' => $dni, 'phone' => $phone]);
 
         if(!$customer) {
-            $response = [
-                'status' => 'err',
-                'message' => 'Customer Not Registered with these credentials'
+            return (object) [
+                'success' => false,
+                'message' => 'Customer not registered with these credentials'
             ];
-            return json_encode($response);
         }
 
         $token_validate = $this->validateToken->validateToken($token, $customer);
 
-        if($token_validate['status'] == 'success') {
-
+        if($token_validate['success']) {
             try {
-
                 $balanceUpdate = is_null($customer->getBalance()) ? $balance : $customer->getBalance() + $balance;
-
                 $customer->setBalance($balanceUpdate);
-                $this->em->persist($customer);
-                $this->em->flush();
+                $this->entityManager->persist($customer);
+                $this->entityManager->flush();
 
-                $response = [
-                    'status' => 'success',
-                    'message' => 'Recharge Wallet Done Successfully'
+                return (object) [
+                    'success' => true,
+                    'message' => 'Recharge wallet done successfully'
                 ];
-                return json_encode($response);
-
-
-            } catch (Exception $e) {
-                $response = [
-                    'status' => 'err',
-                    'message' => 'Option Not Available At The Moment'
+            } catch (\Exception $e) {
+                return (object) [
+                    'success' => false,
+                    'message' => 'Option not available at the moment'
                 ];
-                return json_encode($response);
             }
-
         } else {
-
-            return json_encode($token_validate);
-        }        
-    }
-
-    public function payment($dni=false,$phone=false,$amount_payable=false,$id=false,$token_email=false,$session_id=false,$token) {
-
-        $customerRepository = $this->em->getRepository(Customer::class);
-
-        if($id && $token_email && $session_id){
-
-            $customer = $customerRepository->find($id);
-            $token_validate = $this->validateToken->validateToken($token, $customer);
-
-            if($token_validate['status'] == 'success') {
-
-                try {
-
-                    $customer->setTokenEmail($token_email);
-                    $customer->setSessionId($session_id);
-                    $this->em->persist($customer);
-                    $this->em->flush();
-
-                    $response = [
-                        'status' => 'success',
-                        'message' => 'Token and session_id successfully registered'
-                    ];
-                    return json_encode($response);
-
-                } catch (Exception $e) {
-
-                    $response = [
-                        'status' => 'err',
-                        'message' => 'Option Not Available At The Moment'
-                    ];
-
-                    return json_encode($response);
-
-                }
-            } else {
-
-                return json_encode($token_validate);
-            }
-            
-        } else {
-
-            $customer = $customerRepository->findOneBy(
-                array(
-                    'dni' => $dni,
-                    'phone' => $phone
-                )
-            );
-    
-            if(!$customer) {
-                $response = [
-                    'status' => 'err',
-                    'message' => 'Customer Not Registered'
-                ];
-                return json_encode($response);
-            }
-
-            $token_validate = $this->validateToken->validateToken($token, $customer);
-            if($token_validate['status'] == 'success') {
-
-                try {
-
-                    $data = [
-                        'id' => $customer->getId(),
-                        'email' => $customer->getEmail(),
-                        'balance' => $customer->getBalance()
-                    ];
-        
-                    $response = [
-                        'status' => 'success',
-                        'response' => $data
-                    ];
-                    return json_encode($response);
-
-                } catch (Exception $e) {
-
-                    $response = [
-                        'status' => 'err',
-                        'message' => 'Option Not Available At The Moment'
-                    ];
-
-                    return json_encode($response);
-
-                }
-
-            } else {
-
-                return json_encode($token_validate);
-            }
-            
+            return (object) [
+                'success' => false,
+                'message' => 'Unprocessable entity'
+            ];
         }
-        
     }
 
-    public function confirmPayment($id,$token,$balance=false,$token_email=false,$session_id=false){
+    private function generateRandomString($length = 10) {
+        return substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length/strlen($x)) )),1,$length);
+    }
 
-        $customerRepository = $this->em->getRepository(Customer::class);
-        $customer = $customerRepository->find($id);
+    public function confirmPayment($token_email=false,$session_id=false): object {
+        $customerRepository = $this->entityManager->getRepository(Customer::class);
+        $customer = $customerRepository->findOneBy(['session_id' => $session_id, 'token_email' => $token_email]);
 
         if(!$customer) {
-            $response = [
-                'status' => 'err',
-                'message' => 'Customer Not Registered with these credentials'
+            return (object) [
+                'success' => false,
+                'message' => 'Bad credentials or token expired'
             ];
-            return json_encode($response);
-        }
-
-        $token_validate = $this->validateToken->validateToken($token, $customer);
-
-        if($token_validate['status'] == 'success') {
-
-            if($id && $balance != null && $token_email == null && $session_id == null){
-
-                try {
-
-                    $customer->setBalance($balance);
-                    $customer->setTokenEmail(null);
-                    $customer->setSessionId(null);
-                    $this->em->persist($customer);
-                    $this->em->flush();
-
-                    $response = [
-                        'status' => 'success',
-                        'message' => 'Payment Made Successfully'
-                    ];
-                    return json_encode($response);
-
-                } catch (Exception $e) {
-
-                    $response = [
-                        'status' => 'err',
-                        'message' => 'Your Payment Could Not Be Confirmed'
-                    ];
-
-                    return json_encode($response);
-                }
-
-            } else {
-
-                try {
-
-                    $data = [
-                        'id' => $customer->getId(),
-                        'balance' => $customer->getBalance(),
-                        'token_email' => $customer->getTokenEmail(),
-                        'session_id' => $customer->getSessionId()
-                    ];
-        
-                    $response = [
-                        'status' => 'success',
-                        'response' => $data
-                    ];
-                    return json_encode($response);
-        
-                } catch (Exception $e) {
-        
-                    $response = [
-                        'status' => 'err',
-                        'message' => 'Option Not Available At The Moment'
-                    ];
-        
-                    return json_encode($response);
-        
-                }
-
-            }
         } else {
+            try {
+                $customer->setBalance($customer->getBalance() - $customer->getPendingBalance());
+                $customer->setTokenEmail('');
+                $customer->setPendingBalance(0);
 
-            return json_encode($token_validate);
+                $this->entityManager->persist($customer);
+                $this->entityManager->flush();
+
+                return (object) [
+                    'success' => true,
+                    'message' => 'Payment made successfully'
+                ];
+            } catch (\Exception $exception) {
+                return (object) [
+                    'success' => true,
+                    'message' => 'Payment could not be confirmed'
+                ];
+            }
         }
-
     }
 
-    public function checkBalance($dni,$phone,$token) {
-
-        $customerRepository = $this->em->getRepository(Customer::class);
-        $tokenRepository = $this->em->getRepository(Token::class);
-        $customer = $customerRepository->findOneBy(
-            array(
-                'dni' => $dni,
-                'phone' => $phone
-            )
-        );
+    public function checkBalance($dni,$phone,$token): object {
+        $customerRepository = $this->entityManager->getRepository(Customer::class);
+        $tokenRepository = $this->entityManager->getRepository(Token::class);
+        $customer = $customerRepository->findOneBy(['dni' => $dni, 'phone' => $phone]);
 
         if($customer) {
-
             $token_validate = $this->validateToken->validateToken($token, $customer);
-            if($token_validate['status'] == 'success') {
-
-                $response = [
-                    'status' => 'success',
+            if($token_validate['success']) {
+                return (object) [
+                    'success' => true,
                     'balance' => $customer->getBalance(),
+                    'pending_to_approve' => $customer->getPendingBalance()
                 ];
-
-                return json_encode($response);
-
             } else { 
-                return json_encode($token_validate);
+                return (object) $token_validate;
             }
-
         } else {
-
-            $response = [
-                'status' => 'err',
-                'message' => 'Customer Not Registered with these credentials'
+            return (object) [
+                'success' => false,
+                'message' => 'Customer not registered with these credentials'
             ];
-            return json_encode($response);
-
         }
-       
     }
 
-    public function logout($id,$token,$expiration_date){
-        $customerRepository = $this->em->getRepository(Customer::class);
-        $tokenRepository = $this->em->getRepository(Token::class);
+    public function payment($token, $session_id=null,$amount_payable=null): object {
+        $customerRepository = $this->entityManager->getRepository(Customer::class);
+        $tokenEmail = uniqid();
 
-        if($id && $token && $expiration_date){
+        if($session_id && $token){
+            $customer = $customerRepository->findOneBy(['session_id' => $session_id]);
+            $token_validate = $this->validateToken->validateToken($token, $customer);
 
-            $customer = $customerRepository->find($id);
-
-            $token = $tokenRepository->findOneBy(
-                array(
-                    'customer' => $customer,
-                    'token' => $token,
-                    'expiration_date' => $expiration_date
-                )
-            );
-    
-            if($token){
+            if($customer && $token_validate['success']) {
                 try {
-   
-                    $token->setActivate('disable');
-                    $this->em->persist($token);
-                    $this->em->flush();
+                    // TODO: Send token to customer email
+                    
+                    $customer->setTokenEmail($tokenEmail);
+                    $customer->setSessionId($session_id);
+                    $customer->setPendingBalance($amount_payable);
+                    $this->entityManager->persist($customer);
+                    $this->entityManager->flush();
 
-                    $response = [
-                        'status' => 'success',
-                        'message' => 'Log out successfully'
+                    return (object) [
+                        'success' => true,
+                        // TODO: Remove when email was sent
+                        'token_email_tmp' => $tokenEmail,
+                        'message' => 'Payment was pending to approval'
                     ];
-                    return json_encode($response);
-    
-                } catch (Exception $e) {
-                    $response = [
-                        'status' => 'err',
-                        'message' => 'Option Not Available At The Moment'
+                } catch (\Exception $e) {
+                    return (object) [
+                        'success' => false,
+                        'message' => 'Option not available at the moment'
                     ];
-                    return json_encode($response);
                 }
-    
-            } else{
-                $response = [
-                    'status' => 'err',
-                    'message' => 'The session could not be closed'
-                ];
-                return json_encode($response);
             }
-
-        } else {
-
-            $response = [
-                'status' => 'err',
-                'message' => 'Option Not Available At The Moment'
-            ];
-            return json_encode($response);
         }
-    }
 
+        return (object) [
+            'success' => false,
+            'message' => 'Option not available at the moment'
+        ];
+    }
 }

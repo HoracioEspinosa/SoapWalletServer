@@ -11,7 +11,6 @@
         "doctrine/doctrine-bundle": "^2.7",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.13",
-        "econea/nusoap": "^0.9.12",
         "laminas/laminas-soap": "^2.10",
         "sensio/framework-extra-bundle": "^6.2",
         "symfony/console": "6.1.*",
@@ -22,9 +21,7 @@
         "symfony/proxy-manager-bridge": "6.1.*",
         "symfony/runtime": "6.1.*",
         "symfony/twig-bundle": "6.1.*",
-        "symfony/yaml": "6.1.*",
-        "twig/extra-bundle": "^3.4",
-        "twig/twig": "^3.4"
+        "symfony/yaml": "6.1.*"
     },
     "config": {
         "allow-plugins": {
