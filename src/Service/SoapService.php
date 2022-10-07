@@ -226,6 +226,8 @@ class SoapService
 
                     return (object) [
                         'success' => true,
+                        // TODO: Remove when email was sent
+                        'token_email_tmp' => $tokenEmail,
                         'message' => 'Payment was pending to approval'
                     ];
                 } catch (\Exception $e) {
