@@ -242,42 +242,4 @@ class SoapService
             'message' => 'Option not available at the moment'
         ];
     }
-
-    public function logout($id,$token,$expiration_date): object {
-        $customerRepository = $this->entityManager->getRepository(Customer::class);
-        $tokenRepository = $this->entityManager->getRepository(Token::class);
-
-        if($id && $token && $expiration_date){
-            $customer = $customerRepository->find($id);
-            $token = $tokenRepository->findOneBy(['customer' => $customer, 'token' => $token, 'expiration_date' => $expiration_date]);
-    
-            if($token){
-                try {
-                    $token->setActivate('disable');
-                    $this->entityManager->persist($token);
-                    $this->entityManager->flush();
-
-                    return (object) [
-                        'success' => true,
-                        'message' => 'Log out successfully'
-                    ];
-                } catch (\Exception $e) {
-                    return (object) [
-                        'success' => false,
-                        'message' => 'Option not available at the moment'
-                    ];
-                }
-            } else{
-                return (object) [
-                    'success' => false,
-                    'message' => 'The session could not be closed'
-                ];
-            }
-        } else {
-            return (object) [
-                'success' => false,
-                'message' => 'Option not available at the moment'
-            ];
-        }
-    }
 }
