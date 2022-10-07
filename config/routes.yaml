@@ -1,0 +1,7 @@
+#controllers:
+#    resource: ../src/Controller/
+#    type: attribute
+    
+#soap:
+#  path: /soap/api
+#  controller: App\Controller\HelloController::index
