@@ -18,17 +18,17 @@ class Customer
      * @ORM\GeneratedValue()
      * @ORM\Column(type="bigint")
      */
-    private $id;
+    private readonly int $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $email;
+    private string $email;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $password;
+    private string $password;
 
     /**
      * @ORM\Column(type="bigint")
@@ -56,20 +56,25 @@ class Customer
     private $balance;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="float", nullable=true)
      */
-    private $token_email;
+    private $pending_balance;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $session_id;
+    private string $token_email;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private string $session_id;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
     
-    private $creation_date;
+    private string $creation_date;
 
     /**
      * @ORM\OneToMany(targetEntity=Token::class, mappedBy="customer")
@@ -166,6 +171,18 @@ class Customer
     public function setBalance(?float $balance): self
     {
         $this->balance = $balance;
+
+        return $this;
+    }
+
+    public function getPendingBalance(): ?float
+    {
+        return $this->pending_balance;
+    }
+
+    public function setPendingBalance(?float $pending_balance): self
+    {
+        $this->pending_balance = $pending_balance;
 
         return $this;
     }
