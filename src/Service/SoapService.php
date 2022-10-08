@@ -65,8 +65,19 @@ class SoapService
             ];
         }
     }
-
-    public function registerCustomer($email,$password,$dni,$name,$last_name,$phone): object {
+    
+    /**
+     * Register a new customer
+     * 
+     * @param string|null $email
+     * @param string|null $password
+     * @param int|null $dni
+     * @param string|null $name
+     * @param string|null $last_name
+     * @param int|null $phone
+     * @return object
+     */
+    public function registerCustomer(string $email = null, string $password = null, int $dni = null, string $name = null, string $last_name = null, int $phone = null): object {
         $customerRepository = $this->entityManager->getRepository(Customer::class);
         $query = $customerRepository->createQueryBuilder("customer")
             ->where("customer.email = :email")
@@ -109,7 +120,16 @@ class SoapService
         }  
     }
 
-    public function rechargeWallet($dni,$phone,$balance,$token): object {
+    /**
+     * Recharge Wallet for customer
+     * 
+     * @param int|null $dni
+     * @param int|null $phone
+     * @param float|null $balance
+     * @param string|null $token
+     * @return object
+     */
+    public function RechargeWallet(int $dni = null,int $phone = null, float $balance = null, string $token = null): object {
         $customerRepository = $this->entityManager->getRepository(Customer::class);
         $customer = $customerRepository->findOneBy(['dni' => $dni, 'phone' => $phone]);
 
@@ -151,7 +171,14 @@ class SoapService
         return substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length/strlen($x)) )),1,$length);
     }
 
-    public function confirmPayment($token_email=false,$session_id=false): object {
+    /**
+     * Create payment confirmation
+     * 
+     * @param string|null $token_email
+     * @param string|null $session_id
+     * @return object
+     */
+    public function ConfirmPayment(string $token_email=null, string $session_id=null): object {
         $customerRepository = $this->entityManager->getRepository(Customer::class);
         $customer = $customerRepository->findOneBy(['session_id' => $session_id, 'token_email' => $token_email]);
 
@@ -182,9 +209,17 @@ class SoapService
         }
     }
 
-    public function checkBalance($dni,$phone,$token): object {
+    /**
+     * Get Balance
+     * @param string|null $dni
+     * @param string|null $phone
+     * @param int|null $token
+     * @return object
+     */
+    public function checkBalance(string $dni = null,string $phone = null,int $token = null): object {
         $customerRepository = $this->entityManager->getRepository(Customer::class);
         $tokenRepository = $this->entityManager->getRepository(Token::class);
+        echo "asdasdasd";
         $customer = $customerRepository->findOneBy(['dni' => $dni, 'phone' => $phone]);
 
         if($customer) {
@@ -206,7 +241,14 @@ class SoapService
         }
     }
 
-    public function payment($token, $session_id=null,$amount_payable=null): object {
+    /**
+     * Create payment
+     * @param string $token
+     * @param string|null $session_id
+     * @param float|null $amount_payable
+     * @return object
+     */
+    public function CreatePayment(string $token, string $session_id=null, float $amount_payable=null): object {
         $customerRepository = $this->entityManager->getRepository(Customer::class);
         $tokenEmail = uniqid();
 

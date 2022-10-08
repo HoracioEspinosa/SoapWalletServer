@@ -25,8 +25,8 @@ class SoapServerController extends AbstractController
                 new \Laminas\Soap\Wsdl\ComplexTypeStrategy\ArrayOfTypeSequence(),
                 $serverUrl
             );
-            $soapAutoDiscover->setBindingStyle(array('style' => 'rpc'));
-            $soapAutoDiscover->setOperationBodyStyle(array('use' => 'encode'));
+            $soapAutoDiscover->setBindingStyle(array('style' => 'document'));
+            $soapAutoDiscover->setOperationBodyStyle(array('use' => 'literal'));
             $soapAutoDiscover->setClass($soapService);
             $response->setContent($soapAutoDiscover->generate()->toXml());
         } else {
